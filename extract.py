@@ -2,33 +2,11 @@ import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from datetime import datetime
-import time
 from sys import platform
+from functions import message
 
 path_data = 'data/scraped_apartments.json'
 path_links = 'data/link/links.json'
-
-
-index = [
-    'id',
-    'name',
-    'date',
-    'type_tx',
-    'zone',
-    'price',
-    'price_currency',
-    'aviable',
-    'expenses',
-    'currency_expenses',
-    'total_surface',
-    'total_covered',
-    'ambients',
-    'bedrooms',
-    'bathrooms',
-    'mascots',
-    'antiquity',
-    'orientation'
-]
 
 try:
     scraped_apartments = pd.read_json(path_data)
@@ -38,33 +16,31 @@ except:
 
 links_df = pd.read_json(path_links)[0]
 
-errores = []
-list_objs = []
-
-
 already_used_id_list = scraped_apartments['id'].array
 
-only_new_links = []
+message("Finding the already used links...")
 
+only_new_links = []
 for x in links_df:
     id = int(x.split('-')[1])
     if not id in already_used_id_list:
         only_new_links.append(x)
 
-print(len(only_new_links), len(links_df))
+message("Detecting OS...")
 
 if platform == "linux" or platform == "linux2":
     driver = webdriver.Chrome(executable_path='driver\chromedriver')
 elif platform == "win32":
     driver = webdriver.Chrome(executable_path='driver\chromedriver.exe')
 
+message("Scraping every link...")
 
 for i, link in enumerate(only_new_links):
 
     id = int(link.split('-')[1])
     count_round = (len(already_used_id_list) + i)
     result = (count_round / len(links_df)) * 100
-    print(round(result, 4), ' %') 
+    message(f'{round(result, 4)} % completed')
 
     driver.get(link)
     # Delete Cookies Windows
@@ -87,8 +63,10 @@ for i, link in enumerate(only_new_links):
     orientation = None
 
     try:
-        driver.find_element(By.XPATH, '/html/body/main/div/div[2]/section/div[1]/div/div/div[2]/div[1]')
+        driver.find_element(
+            By.XPATH, '/html/body/main/div/div[2]/section/div[1]/div/div/div[2]/div[1]')
         continue
+
     except:
 
         table_catacteristics = driver.find_elements(
@@ -97,7 +75,6 @@ for i, link in enumerate(only_new_links):
             By.XPATH, '/html/body/main/div/div[4]/div/div[1]/div[1]/div/div[1]/div/div[2]/h1').text
         type_tx = driver.find_element(
             By.XPATH, '/html/body/main/div/div[4]/div/div[1]/div[1]/div/div[1]/div/div[1]/span').text
-        #saller_name = driver.find_element(By.XPATH, '')
         try:
             date = driver.find_element(
                 By.XPATH, '/html/body/main/div/div[4]/div/div[1]/div[1]/div/div[1]/div/p').text
@@ -112,7 +89,6 @@ for i, link in enumerate(only_new_links):
             By.CLASS_NAME, 'andes-breadcrumb__link')
         for zone1 in zone_base:
             zone = zone1
-
 
         for row in table_catacteristics:
 
@@ -172,12 +148,11 @@ for i, link in enumerate(only_new_links):
             scraped_apartments = pd.read_json(path_data)
 
         new_row = pd.DataFrame([obj], index=[len(scraped_apartments)])
-        
+
         scraped_apartments = pd.concat([scraped_apartments, new_row])
-        
-        print(scraped_apartments)
-        
-        #scraped_apartments = scraped_apartments.append(
-        #    obj, ignore_index=True)
+
+        print(scraped_apartments.head())
 
         scraped_apartments.to_json(path_data)
+
+message("Finished!")
