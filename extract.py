@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 import time
 
-path_data = 'data\scraped_apartments.json'
+path_data = 'data/scraped_apartments.json'
 path_links = 'data/link/links.json'
 
 index = [
