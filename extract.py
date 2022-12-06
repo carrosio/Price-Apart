@@ -3,9 +3,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from datetime import datetime
 import time
+from sys import platform
 
 path_data = 'data/scraped_apartments.json'
 path_links = 'data/link/links.json'
+
 
 index = [
     'id',
@@ -51,8 +53,11 @@ for x in links_df:
 
 print(len(only_new_links), len(links_df))
 
+if platform == "linux" or platform == "linux2":
+    driver = webdriver.Chrome(executable_path='driver\chromedriver')
+elif platform == "win32":
+    driver = webdriver.Chrome(executable_path='driver\chromedriver.exe')
 
-driver = webdriver.Chrome(executable_path='chromedriver')
 
 for i, link in enumerate(only_new_links):
 
