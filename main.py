@@ -16,5 +16,3 @@ data_df['price_pesos_plus_expenses'] = data_df.price_pesos + data_df.expenses
 data_df['m2'] = data_df.price_pesos_plus_expenses / data_df.total_covered
 data_df['price_plus_expenses_USD'] = data_df.price_pesos_plus_expenses / dolar_price
 data_df['price_plus_expenses_USD_m2'] = data_df.price_plus_expenses_USD / data_df.total_covered
-
-print(data_df)

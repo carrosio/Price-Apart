@@ -29,7 +29,7 @@ for x in links_df:
 message("Detecting OS...")
 
 if platform == "linux" or platform == "linux2":
-    driver = webdriver.Chrome(executable_path='driver\chromedriver')
+    driver = webdriver.Chrome(executable_path='driver/chromedriver')
 elif platform == "win32":
     driver = webdriver.Chrome(executable_path='driver\chromedriver.exe')
 
